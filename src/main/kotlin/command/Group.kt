@@ -1,4 +1,4 @@
-package com.github.zzwtsy.data.command
+package com.github.zzwtsy.command
 
 import com.github.zzwtsy.GenshinMiraiBot
 import com.github.zzwtsy.data.PluginConfig
@@ -19,6 +19,5 @@ object Group : CompositeCommand(
             commandContext.sender.subject?.sendMessage(originalMessage.quote().plus("请指定角色名"))
             return
         }
-
     }
 }

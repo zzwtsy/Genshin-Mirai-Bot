@@ -21,7 +21,9 @@ object GenshinMiraiBot : KotlinPlugin(
         val file = File(strategyImagePath)
         println(file.listFiles()?.size)
         if (!file.exists() || file.listFiles() == null) {
-            Strategy().downloadStrategyImage()
+            val status = Strategy().downloadStrategyImage()
+            if (status.isNotEmpty())
+                logger.info { "没有攻略图的角色${status}" }
         }
 //        CommandManager.registerCommand(Group)
         logger.info { "Plugin loaded" }

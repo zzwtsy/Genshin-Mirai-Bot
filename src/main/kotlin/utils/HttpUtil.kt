@@ -2,7 +2,6 @@ package com.github.zzwtsy.utils
 
 import com.github.zzwtsy.GenshinMiraiBot
 import com.github.zzwtsy.tools.MyHeaders
-import net.mamoe.mirai.utils.info
 import okhttp3.*
 import java.io.File
 import java.io.IOException
@@ -62,45 +61,69 @@ object HttpUtil {
     }
 
     /**
-     * 下载图片 (代码来自 ChatGPT)
-     * @param [imageUrls] 图像 <图片名，图片 url> 合集
-     * @param [savePath] 保存路径
+     * 下载多张图片，并保存到指定路径。
+     *
+     * @param imageUrls 需要下载的图片 URL 和文件名的映射关系。
+     * @param savePath  图片保存路径。
      */
-    fun downloadImages(imageUrls: Map<String, String>, savePath: String) {
+    fun downloadImages(
+        imageUrls: Map<String, String>,
+        savePath: String,
+    ) {
         for ((filename, url) in imageUrls) {
+            // 构建请求
             val request = Request.Builder()
                 .headers(MyHeaders.baseHeader())
                 .url(url)
                 .build()
-            client.newCall(request).enqueue(object : Callback {
-                //处理请求失败情况
-                override fun onFailure(call: Call, e: IOException) {
-                    GenshinMiraiBot.logger.error("「${filename}」下载失败：${e.message}")
-                }
+            // 发起异步请求
+            client.newCall(request)
+                .enqueue(object : Callback {
+                    // 请求失败处理
+                    override fun onFailure(call: Call, e: IOException) {
+                        GenshinMiraiBot.logger.error("「${filename}」下载失败：${e.message}")
+                    }
 
-                // 处理请求成功情况，response 包含了响应结果等信息
-                override fun onResponse(call: Call, response: Response) {
-                    if (!response.isSuccessful) throw Exception("「${filename}」下载失败")
-                    //获取图片类型
-                    val contentType = response.body?.contentType()
-                    val extension = contentType?.subtype ?: ""
-                    //获取图片数据
-                    val imageData = response.body?.bytes() ?: throw Exception("「${filename}」下载失败")
-                    // 保存图片数据到文件
-                    imageData.saveToFile(savePath, filename, extension)
-                }
-            })
-            GenshinMiraiBot.logger.info { "正在下载「${filename}」" }
-            //避免下载过快导致米游社拒绝下载图片
+                    // 请求成功处理
+                    override fun onResponse(call: Call, response: Response) {
+                        // 使用 use 函数管理资源生命周期
+                        response.use {
+                            GenshinMiraiBot.logger.debug("正在下载：${filename}")
+                            if (!response.isSuccessful) {
+                                GenshinMiraiBot.logger.error("「${filename}」下载失败")
+                                return
+                            }
+                            // 获取图片类型和数据
+                            val contentType = response.body?.contentType()
+                            val extension = contentType?.subtype ?: ""
+                            val imageData = response.body?.bytes() ?: run {
+                                GenshinMiraiBot.logger.error("「${filename}.${extension}」下载失败")
+                                return
+                            }
+                            // 保存图片数据到文件
+                            imageData.saveToFile(savePath, filename, extension)
+                        }
+                    }
+                })
+            // 延迟 200ms 避免过快下载导致服务器拒绝服务
             Thread.sleep(200)
         }
     }
 
-    /** ByteArray 类型的扩展函数，用于将数据保存到文件中*/
+    /**
+     * ByteArray 类型的扩展函数，用于将数据保存到文件中。
+     *
+     * @param savePath 保存路径。
+     * @param filename 文件名。
+     * @param extension 文件扩展名。
+     */
     private fun ByteArray.saveToFile(savePath: String, filename: String, extension: String) {
         val file = File("$savePath/$filename.$extension")
+        // 确保目录存在
         file.parentFile?.mkdirs()
+        // 写入数据到文件中
         file.outputStream().use { it.write(this) }
+        GenshinMiraiBot.logger.debug("正在保存：${filename}.${extension}")
     }
 
 }
