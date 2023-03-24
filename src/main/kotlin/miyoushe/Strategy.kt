@@ -1,9 +1,9 @@
 package com.github.zzwtsy.miyoushe
 
 import com.github.zzwtsy.GenshinMiraiBot
+import com.github.zzwtsy.data.pluginConfig.role.RoleName
 import com.github.zzwtsy.tools.*
 import com.github.zzwtsy.utils.HttpUtil
-import data.role.RoleName
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
@@ -61,13 +61,16 @@ class Strategy {
         // 获取已经下载的攻略图片名称列表
         val fileNames = File(strategyImagePath)
             .listFiles()
-            .filter { it.isFile }
-            .filter { !travelerRegex.containsMatchIn(it.nameWithoutExtension) }
-            .map { it.nameWithoutExtension }
+            ?.filter { it.isFile }
+            ?.filter { !travelerRegex.containsMatchIn(it.nameWithoutExtension) }
+            ?.mapNotNull { it.nameWithoutExtension }
+
+        // 攻略图文件不存在或无攻略图片，返回所有角色名称
+        if (fileNames.isNullOrEmpty()) return roleNameList
 
         // 筛选出需要更新的攻略图片名称列表
         val updateNames = roleNameList
-            .filter { it != "旅行者" } // 不考虑旅行者角色
+            .filter { it != "旅行者" }
             .filter { !fileNames.contains(it) } // 只保留未下载的角色
 
         // 如果不需要更新，则返回空列表
