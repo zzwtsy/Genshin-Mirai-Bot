@@ -9,15 +9,27 @@ import net.mamoe.mirai.console.data.value
  * @author zzwtsy
  * @date 2023/03/23
  */
-object Name : AutoSavePluginData("name") {
+object RoleNameConfig : AutoSavePluginData("name") {
     @SerialName("20000000")
     val traveler by value(
-        arrayListOf(
-            "主角", "旅行者", "卑鄙的外乡人", "荣誉骑士", "爷", "风主", "岩主", "雷主", "草主", "履刑者", "抽卡不歪真君"
+        mapOf(
+            "旅行者" to arrayOf(
+                "主角",
+                "旅行者",
+                "卑鄙的外乡人",
+                "荣誉骑士",
+                "爷",
+                "风主",
+                "岩主",
+                "雷主",
+                "草主",
+                "履刑者",
+                "抽卡不歪真君"
+            )
         )
     )
 
-    @SerialName("10000002")
+    @SerialName("神里绫华")
     val kamisatoAyaka by value(
         arrayListOf(
             "神里绫华",
@@ -35,7 +47,7 @@ object Name : AutoSavePluginData("name") {
         )
     )
 
-    @SerialName("10000003")
+    @SerialName("琴")
     val jean by value(
         arrayListOf(
             "琴",

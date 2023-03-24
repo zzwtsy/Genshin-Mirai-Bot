@@ -1,6 +1,7 @@
 package com.github.zzwtsy.data
 
 import net.mamoe.mirai.console.data.AutoSavePluginConfig
+import net.mamoe.mirai.console.data.ValueDescription
 import net.mamoe.mirai.console.data.value
 
 /**
@@ -9,5 +10,10 @@ import net.mamoe.mirai.console.data.value
  * @date 2023/03/23
  */
 object PluginConfig : AutoSavePluginConfig("PluginConfig") {
+
+    @ValueDescription("qq 群号")
     val groupId by value(0L)
+
+    @ValueDescription("主指令别名")
+    val secondaryNames: Array<String> by value()
 }

@@ -1,6 +1,6 @@
 package com.github.zzwtsy
 
-import com.github.zzwtsy.miyoushe.Download
+import com.github.zzwtsy.miyoushe.Strategy
 import com.github.zzwtsy.tools.strategyImagePath
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
@@ -19,8 +19,11 @@ object GenshinMiraiBot : KotlinPlugin(
     override fun onEnable() {
         //下载攻略图
         val file = File(strategyImagePath)
-        if (!file.exists() || file.listFiles() == null)
-            Download().downloadStrategyImage()
+        println(file.listFiles()?.size)
+        if (!file.exists() || file.listFiles() == null) {
+            Strategy().downloadStrategyImage()
+        }
+//        CommandManager.registerCommand(Group)
         logger.info { "Plugin loaded" }
     }
 }

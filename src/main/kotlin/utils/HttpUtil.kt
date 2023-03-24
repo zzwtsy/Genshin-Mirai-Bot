@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
  * @constructor 创建[HttpUtil]
  */
 object HttpUtil {
-    private val client = OkHttpClient.Builder().readTimeout(500, TimeUnit.MILLISECONDS).build()
+    private val client = OkHttpClient.Builder().readTimeout(10, TimeUnit.SECONDS).build()
 
     /**
      * 发送 get 请求
@@ -69,13 +69,13 @@ object HttpUtil {
     fun downloadImages(imageUrls: Map<String, String>, savePath: String) {
         for ((filename, url) in imageUrls) {
             val request = Request.Builder()
-//                .headers(MyHeaders.baseHeader())
+                .headers(MyHeaders.baseHeader())
                 .url(url)
                 .build()
             client.newCall(request).enqueue(object : Callback {
                 //处理请求失败情况
                 override fun onFailure(call: Call, e: IOException) {
-                    GenshinMiraiBot.logger.error("「${filename}」下载失败", e)
+                    GenshinMiraiBot.logger.error("「${filename}」下载失败：${e.message}")
                 }
 
                 // 处理请求成功情况，response 包含了响应结果等信息
@@ -87,7 +87,7 @@ object HttpUtil {
                     //获取图片数据
                     val imageData = response.body?.bytes() ?: throw Exception("「${filename}」下载失败")
                     // 保存图片数据到文件
-                    imageData.saveToFile("$savePath/$filename.$extension")
+                    imageData.saveToFile(savePath, filename, extension)
                 }
             })
             GenshinMiraiBot.logger.info { "正在下载「${filename}」" }
@@ -97,8 +97,8 @@ object HttpUtil {
     }
 
     /** ByteArray 类型的扩展函数，用于将数据保存到文件中*/
-    private fun ByteArray.saveToFile(path: String) {
-        val file = File(path)
+    private fun ByteArray.saveToFile(savePath: String, filename: String, extension: String) {
+        val file = File("$savePath/$filename.$extension")
         file.parentFile?.mkdirs()
         file.outputStream().use { it.write(this) }
     }
