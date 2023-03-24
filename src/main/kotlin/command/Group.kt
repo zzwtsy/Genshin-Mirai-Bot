@@ -1,7 +1,7 @@
 package com.github.zzwtsy.command
 
 import com.github.zzwtsy.GenshinMiraiBot
-import com.github.zzwtsy.data.PluginConfig
+import com.github.zzwtsy.data.pluginConfig.PluginConfig
 import net.mamoe.mirai.console.command.CommandContext
 import net.mamoe.mirai.console.command.CompositeCommand
 import net.mamoe.mirai.message.data.MessageSource.Key.quote
