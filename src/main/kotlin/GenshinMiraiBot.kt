@@ -15,7 +15,7 @@ import java.io.File
 
 object GenshinMiraiBot : KotlinPlugin(
     JvmPluginDescription(
-        id = "cn.zzwtsy.genshin",
+        id = "com.github.zzwtsy.genshin",
         name = "Genshin Mirai Bot",
         version = "0.1.0",
     ) {
