@@ -5,7 +5,7 @@ import com.github.zzwtsy.GenshinMiraiBot
 private val pluginDataPath = "data/${GenshinMiraiBot.dataFolder.name}"
 
 /** 攻略图像存放路径 */
-val strategyImagePath = "$pluginDataPath/image/strategy"
+val strategyImagePath = "$pluginDataPath/image/strategy/"
 
 /** 原神角色名称,网址 */
 const val roleNamesUrl =
@@ -24,7 +24,8 @@ val strategySource = arrayOf(
 )
 
 /** 数据库文件路径 */
-val dbPath = "$pluginDataPath/GenshinMiraiBot.db"
+// 他妈的数据库文件路径还有名称不能太长
+val dbPath = "${pluginDataPath}/data.db"
 
 /** 数据库连接 url */
 val dbUrl = "jdbc:sqlite:$dbPath"

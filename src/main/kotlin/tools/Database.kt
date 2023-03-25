@@ -1,6 +1,7 @@
 package com.github.zzwtsy.tools
 
 import com.github.zzwtsy.GenshinMiraiBot
+import com.github.zzwtsy.utils.HttpUtil
 import com.github.zzwtsy.utils.SqliteUtils.createTable
 import com.github.zzwtsy.utils.SqliteUtils.executeUpdate
 import org.yaml.snakeyaml.Yaml
@@ -20,9 +21,19 @@ object Database {
             GenshinMiraiBot.logger.info("数据库文件已存在")
             return
         }
+        //注册数据库
         Class.forName("org.sqlite.JDBC")
         //创建表
         crateTable()
+        //下载角色别名数据
+        val roleName = File("$tempPath/roleName.yml")
+        if (!roleName.exists()) {
+            val sendGet = HttpUtil.sendGet("https://static.yumdeb.top/img/GenshinImpact/bot/name.yml")
+            val byteArray = sendGet?.encodeToByteArray()
+            roleName.outputStream().use {
+                byteArray?.let { it1 -> it.write(it1) }
+            }
+        }
         //插入角色数据
         insertRoleData()
     }

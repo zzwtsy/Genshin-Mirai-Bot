@@ -124,6 +124,7 @@ object HttpUtil {
         // 写入数据到文件中
         file.outputStream().use { it.write(this) }
         GenshinMiraiBot.logger.debug("正在保存：${filename}.${extension}")
+        GenshinMiraiBot.logger.info("${filename}.${extension}下载完成")
     }
 
 }
