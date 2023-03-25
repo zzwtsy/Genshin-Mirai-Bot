@@ -1,7 +1,6 @@
 package com.github.zzwtsy.miyoushe
 
 import com.github.zzwtsy.GenshinMiraiBot
-import com.github.zzwtsy.dao.RoleDao
 import com.github.zzwtsy.data.role.RoleName
 import com.github.zzwtsy.tools.*
 import com.github.zzwtsy.utils.HttpUtil
@@ -41,9 +40,9 @@ class Strategy {
         GenshinMiraiBot.logger.info { "攻略图个数：${strategyImageUrls.size}" }
 
         // 下载符合条件的攻略图片
-        HttpUtil.downloadImages(roleNameUrlToRoleIdUrl(strategyImageUrls), strategyImagePath)
+        DownloadStrategyImage.downloadImages(strategyImageUrls, strategyImagePath)
 
-        // 过滤旅行者和已经获取的角色，只保留未获取的角色名称列表
+        // 过滤旅行者和已经获取的角色，只保留没有攻略图的角色名称列表
         return strategyImageUrls
             .filter { !travelerRegex.containsMatchIn(it.key) }
             .filter { !roleNameList.contains(it.key) }
@@ -84,9 +83,9 @@ class Strategy {
         GenshinMiraiBot.logger.info { "攻略图个数：${strategyImageUrls.size}" }
 
         // 下载需要更新的攻略图片
-        HttpUtil.downloadImages(roleNameUrlToRoleIdUrl(strategyImageUrls), strategyImagePath)
+        DownloadStrategyImage.downloadImages(strategyImageUrls, strategyImagePath)
 
-        // 返回需要更新的角色名称列表，同时过滤掉已经存在的角色
+        // 过已经获取攻略图的角色，只保留没有攻略图的角色名称列表
         return strategyImageUrls.keys
             .filter { !roleNameList.contains(it) }
 
@@ -155,17 +154,7 @@ class Strategy {
             }
 
             // 如果角色名称符合正则表达式，则将名称和对应图片链接添加到 Map 中
-            regexMatch?.let { it to imgUrl }
-        }.toMap()
-    }
-
-    /**
-     * Map<角色名字,url>转换为Map<角色 Id,url>
-     */
-    private fun roleNameUrlToRoleIdUrl(map: Map<String, String>): Map<String, String> {
-        return map.map {
-            val roleId = RoleDao.getRoleIdByName(it.key).toString()
-            roleId to it.value
+            regexMatch?.let { it to "$imgUrl$oss" }
         }.toMap()
     }
 }

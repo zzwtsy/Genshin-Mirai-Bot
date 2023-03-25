@@ -15,6 +15,6 @@ object PluginConfig : AutoSavePluginConfig("PluginConfig") {
     val groupId by value(0L)
 
     @ValueDescription("主指令别名")
-    val secondaryNames: Array<String> by value()
+    val secondaryNames: Array<String> by value(arrayOf("原神", "genshin"))
 
 }

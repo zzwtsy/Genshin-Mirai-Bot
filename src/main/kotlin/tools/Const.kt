@@ -2,10 +2,9 @@ package com.github.zzwtsy.tools
 
 import com.github.zzwtsy.GenshinMiraiBot
 
-private val pluginDataPath = "data/${GenshinMiraiBot.dataFolder.name}"
-
-/** 攻略图像存放路径 */
-val strategyImagePath = "$pluginDataPath/image/strategy/"
+// api
+/** 角色别名数据文件 url */
+const val roleNameAliasesFileUrl = "https://static.yumdeb.top/img/GenshinImpact/bot/roleNameAliases.yml"
 
 /** 原神角色名称,网址 */
 const val roleNamesUrl =
@@ -15,6 +14,9 @@ const val roleNamesUrl =
 const val mysPostsUrl =
     "https://bbs-api.mihoyo.com/post/wapi/getPostFullInCollection?&gids=2&order_type=2&collection_id="
 
+/** 将攻略图片转换为 jpeg 格式减小图片大小 */
+const val oss = "?x-oss-process=image/format,jpg"
+
 /** 西风驿站攻略帖合集 id */
 val strategySource = arrayOf(
     839176, /*蒙德角色图鉴合集*/
@@ -23,8 +25,13 @@ val strategySource = arrayOf(
     1180811 /*须弥角色图鉴合集*/
 )
 
+// paths
+private val pluginDataPath = "data/${GenshinMiraiBot.dataFolder.name}"
+
+/** 攻略图像存放路径 */
+val strategyImagePath = "$pluginDataPath/image/strategy/"
+
 /** 数据库文件路径 */
-// 他妈的数据库文件路径还有名称不能太长
 val dbPath = "${pluginDataPath}/data.db"
 
 /** 数据库连接 url */
@@ -35,3 +42,6 @@ val tempPath = "$pluginDataPath/temp"
 
 /** 需要初始化的文件夹路径列表 */
 val initFilePathsList = arrayOf(tempPath, strategyImagePath)
+
+/** 角色别名数据文件存放路径 */
+val roleNameAliasesPath = "$tempPath/roleName.yml"

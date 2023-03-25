@@ -14,15 +14,15 @@ object RoleDao {
      * @param [name] 名字
      * @return [Int] 角色 id
      */
-    fun getRoleIdByName(name: String): Int? {
-        val roleId = dbUrl.executeQuery("SELECT * FROM role_aliases WHERE alias = '$name'") {
-            var roleId = -1
+    fun getImageMd5ByName(name: String): Int? {
+        val imageMd5 = dbUrl.executeQuery("SELECT * FROM role_aliases WHERE alias = '$name'") {
+            var imageMd5 = -1
             while (this.next()) {
-                roleId = this.getInt("character_id")
+                imageMd5 = this.getInt("image_md5")
             }
-            roleId
+            imageMd5
         }
 
-        return if (roleId == -1) null else roleId
+        return if (imageMd5 == -1) null else imageMd5
     }
 }

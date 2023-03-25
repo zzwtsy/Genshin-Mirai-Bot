@@ -36,9 +36,6 @@ object GenshinMiraiBot : KotlinPlugin(
         Database.init()
         //下载攻略图
         val file = File(strategyImagePath)
-        println(strategyImagePath)
-        println(file.exists())
-        println(file.listFiles().isNullOrEmpty())
         if (!file.exists() || file.listFiles().isNullOrEmpty()) {
             val status = Strategy().downloadStrategyImage()
             if (status.isNotEmpty())
