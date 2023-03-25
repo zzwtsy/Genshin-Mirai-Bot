@@ -20,5 +20,5 @@ dependencies {
     // https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
     implementation("org.xerial:sqlite-jdbc:3.41.2.0")
     // https://mvnrepository.com/artifact/org.yaml/snakeyaml
-    testImplementation("org.yaml:snakeyaml:2.0")
+    implementation("org.yaml:snakeyaml:2.0")
 }

@@ -1,7 +1,8 @@
 package com.github.zzwtsy.miyoushe
 
 import com.github.zzwtsy.GenshinMiraiBot
-import com.github.zzwtsy.data.pluginConfig.role.RoleName
+import com.github.zzwtsy.dao.RoleDao
+import com.github.zzwtsy.data.role.RoleName
 import com.github.zzwtsy.tools.*
 import com.github.zzwtsy.utils.HttpUtil
 import kotlinx.serialization.decodeFromString
@@ -40,7 +41,7 @@ class Strategy {
         GenshinMiraiBot.logger.info { "攻略图个数：${strategyImageUrls.size}" }
 
         // 下载符合条件的攻略图片
-        HttpUtil.downloadImages(strategyImageUrls, strategyImagePath)
+        HttpUtil.downloadImages(roleNameUrlToRoleIdUrl(strategyImageUrls), strategyImagePath)
 
         // 过滤旅行者和已经获取的角色，只保留未获取的角色名称列表
         return strategyImageUrls
@@ -83,7 +84,7 @@ class Strategy {
         GenshinMiraiBot.logger.info { "攻略图个数：${strategyImageUrls.size}" }
 
         // 下载需要更新的攻略图片
-        HttpUtil.downloadImages(strategyImageUrls, strategyImagePath)
+        HttpUtil.downloadImages(roleNameUrlToRoleIdUrl(strategyImageUrls), strategyImagePath)
 
         // 返回需要更新的角色名称列表，同时过滤掉已经存在的角色
         return strategyImageUrls.keys
@@ -158,4 +159,13 @@ class Strategy {
         }.toMap()
     }
 
+    /**
+     * Map<角色名字,url>转换为Map<角色 Id,url>
+     */
+    private fun roleNameUrlToRoleIdUrl(map: Map<String, String>): Map<String, String> {
+        return map.map {
+            val roleId = RoleDao.getRoleIdByName(it.key).toString()
+            roleId to it.value
+        }.toMap()
+    }
 }

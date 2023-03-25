@@ -1,6 +1,6 @@
-package com.github.zzwtsy.data.pluginConfig.role
+package com.github.zzwtsy.data.role
 
-import com.github.zzwtsy.data.pluginConfig.role.RoleName.RoleName
+import com.github.zzwtsy.data.role.RoleName.RoleName
 import kotlinx.serialization.Serializable
 
 /**

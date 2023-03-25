@@ -1,6 +1,8 @@
 package com.github.zzwtsy
 
 import com.github.zzwtsy.miyoushe.Strategy
+import com.github.zzwtsy.tools.Database
+import com.github.zzwtsy.tools.initFilePathsList
 import com.github.zzwtsy.tools.strategyImagePath
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
@@ -17,6 +19,16 @@ object GenshinMiraiBot : KotlinPlugin(
     }
 ) {
     override fun onEnable() {
+        //初始化文件夹
+        initFilePathsList.forEach {
+            val file = File(it)
+            if (!file.exists()) {
+                file.mkdirs()
+                logger.debug("已创建{${it}}文件夹")
+            }
+        }
+        //初始化数据库
+        Database.init()
         //下载攻略图
         val file = File(strategyImagePath)
         println(file.listFiles()?.size)
