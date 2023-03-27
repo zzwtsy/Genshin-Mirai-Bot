@@ -25,5 +25,11 @@ dependencies {
     implementation("org.ktorm:ktorm-core:3.6.0")
     // https://mvnrepository.com/artifact/org.ktorm/ktorm-support-sqlite
     implementation("org.ktorm:ktorm-support-sqlite:3.6.0")
+    // https://mvnrepository.com/artifact/com.zaxxer/HikariCP
+    implementation("com.zaxxer:HikariCP:5.0.1")
 
+}
+
+mirai {
+    jvmTarget = JavaVersion.VERSION_17
 }

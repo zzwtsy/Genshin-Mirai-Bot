@@ -12,16 +12,8 @@ import org.ktorm.schema.ColumnDeclaring
  * codeGen github:https://github.com/yuzd/AntData.ORM
  **/
 object Tables {
-    val alias = AliasDao
-    val Database.aliases get() = this.sequenceOf(AliasDao, false)
-    val character = CharacterDao
-    val Database.characters get() = this.sequenceOf(CharacterDao, false)
-    val characterStrategy = CharacterStrategyDao
-    val Database.characterStrategies get() = this.sequenceOf(CharacterStrategyDao, false)
-    val element = ElementDao
-    val Database.elements get() = this.sequenceOf(ElementDao, false)
-    val strategy = StrategyDao
-    val Database.strategies get() = this.sequenceOf(StrategyDao, false)
+    val Database.aliases get() = this.sequenceOf(Aliases, false)
+    val Database.characters get() = this.sequenceOf(Characters, false)
     fun <E : Any, T : BaseTable<E>> EntitySequence<E, T>.insert(block: AssignmentsBuilder.(T) -> Unit): Int {
         return this.database.insert(this.sourceTable, block)
     }

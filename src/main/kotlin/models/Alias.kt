@@ -1,15 +1,12 @@
-﻿package com.github.zzwtsy.dbmodels
+﻿package com.github.zzwtsy.models
 
 import org.ktorm.entity.Entity
 
 interface Alias : Entity<Alias> {
     companion object : Entity.Factory<Alias>()
 
-    var id: Int
-    var characterId: Int
-    var aka: String
-    var elementId: Int
+    var characterId: String
+    var name: String
 
     var characterIdCharacter: Character?
-    var elementIdElement: Element?
 }

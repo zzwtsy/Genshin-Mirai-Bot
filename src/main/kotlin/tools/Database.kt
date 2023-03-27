@@ -1,8 +1,10 @@
 package com.github.zzwtsy.tools
 
 import com.github.zzwtsy.GenshinMiraiBot
+import com.github.zzwtsy.tools.Const.DB_FILE_PATH
+import com.github.zzwtsy.tools.Const.ROLE_NAME_ALIASES_FILE_URL
+import com.github.zzwtsy.tools.Const.ROLE_NAME_ALIASES_PATH
 import com.github.zzwtsy.utils.HttpUtil
-import com.github.zzwtsy.utils.SqliteUtils.createTable
 import java.io.File
 
 /**
@@ -15,21 +17,19 @@ object Database {
      * 初始化数据库
      */
     fun init() {
-        if (File(dbPath).exists()) {
+        if (File(DB_FILE_PATH).exists()) {
             GenshinMiraiBot.logger.info("数据库文件已存在")
             return
         }
-        //注册数据库
-        Class.forName("org.sqlite.JDBC")
         //创建表
         crateTable()
         //下载角色别名数据
-        val roleName = File(roleNameAliasesPath)
+        val roleName = File(ROLE_NAME_ALIASES_PATH)
         if (!roleName.exists()) {
-            val sendGet = HttpUtil.sendGet(roleNameAliasesFileUrl)
+            val sendGet = HttpUtil.sendGet(ROLE_NAME_ALIASES_FILE_URL)
             val byteArray = sendGet?.encodeToByteArray()
             roleName.outputStream().use {
-                byteArray?.let { it1 -> it.write(it1) }
+                byteArray?.let { content -> it.write(content) }
             }
         }
     }
@@ -39,23 +39,29 @@ object Database {
      */
     private fun crateTable() {
 
-        // 创建 role_aliases 表
-        dbUrl.createTable("role_aliases") {
-            column("uuid", "TEXT") {
-                notNull()
-                primaryKey()
-            }
-            column("alias", "TEXT") {
-                notNull()
-            }
-            column("role_id", "INTEGER") {
-                notNull()
-            }
-            column("image_md5", "TEXT") {
-                notNull()
-            }
-        }
+        // 创建 Characters 表
+        val connection = dataSource.connection
+        connection.prepareStatement(
+            """
+            CREATE TABLE "Characters" (
+              "id" text,
+              "name" text NOT NULL,
+              "strategy_md5" TEXT NOT NULL,
+              PRIMARY KEY ("id")
+            );
+        """.trimIndent()
+        )
+        // 创建 Aliases 表
+        connection.prepareStatement(
+            """
+            CREATE TABLE "Aliases" (
+              "character_id" text NOT NULL,
+              "name" text NOT NULL,
+              PRIMARY KEY ("character_id", "name"),
+              FOREIGN KEY ("character_id") REFERENCES "Characters" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+            );
+        """.trimIndent()
+        )
     }
-
 }
 

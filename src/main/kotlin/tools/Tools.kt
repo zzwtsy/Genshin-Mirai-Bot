@@ -1,8 +1,9 @@
 package com.github.zzwtsy.tools
 
 import com.github.zzwtsy.GenshinMiraiBot
-import com.github.zzwtsy.dao.RoleDao
-import com.github.zzwtsy.utils.SqliteUtils.executeUpdate
+import com.github.zzwtsy.service.AliasService
+import com.github.zzwtsy.service.CharacterService
+import com.github.zzwtsy.tools.Const.TEMP_PATH
 import org.yaml.snakeyaml.Yaml
 import java.io.File
 import java.security.MessageDigest
@@ -16,6 +17,8 @@ import java.util.*
  * @constructor 创建[Tools]
  */
 object Tools {
+    private val logger = GenshinMiraiBot.logger
+
     /**
      * 将角色名转换为正则表达式
      * @param [roleName] 角色名
@@ -52,22 +55,32 @@ object Tools {
      * @param [aliasesAndMD5s] Map<角色名, 攻略图md5>
      */
     fun saveCharacterAliasesAndMD5s(aliasesAndMD5s: Map<String, String>) {
+        val travelerRegex = "[草雷水火岩风冰]主".toRegex()
         val roleAliasesData = getRoleAliasesData()
         if (roleAliasesData.isNullOrEmpty()) {
-            GenshinMiraiBot.logger.error("获取角色别名数据失败")
+            logger.error("获取角色别名数据失败")
             return
         }
         for ((roleName, imageMd5) in aliasesAndMD5s) {
-            roleAliasesData
-                .filter { RoleDao.getImageMd5ByName(roleName) == null }
-                .filter { it.value.contains(roleName) }
-                .forEach { (roleId, aliases) ->
-                    for (alias in aliases) {
-                        dbUrl.executeUpdate(
-                            "INSERT INTO role_aliases (uuid, alias, role_id, image_md5) VALUES ('${getUUID()}', '$alias', $roleId, '$imageMd5')"
-                        )
+            logger.error("准备添加：$roleName")
+            CharacterService.getStrategyMd5ByAlias(roleName) ?: run {
+                roleAliasesData
+                    .filter { it.value.contains(roleName) }
+                    .forEach { (_, aliases) ->
+                        logger.error("正在添加：$roleName")
+                        val uuid = getUUID()
+                        CharacterService.add(uuid, roleName, imageMd5)
+                        if (travelerRegex.containsMatchIn(roleName)) {
+                            val add = AliasService.add(uuid, roleName)
+                            if (add) logger.info("${roleName}已添加别名${roleName}")
+                        } else {
+                            for (alias in aliases) {
+                                val add = AliasService.add(uuid, alias)
+                                if (add) logger.info("${roleName}已添加别名${alias}")
+                            }
+                        }
                     }
-                }
+            }
         }
     }
 
@@ -76,7 +89,7 @@ object Tools {
      * @return [Map<Int, List<String>>?]
      */
     private fun getRoleAliasesData(): Map<Int, List<String>>? {
-        val reader = File("$tempPath/roleName.yml").reader()
+        val reader = File("$TEMP_PATH/roleName.yml").reader()
         return Yaml().load<Map<Int, List<String>>>(reader)
     }
 
