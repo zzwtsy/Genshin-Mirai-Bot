@@ -1,10 +1,7 @@
 package com.github.zzwtsy.tools
 
 import com.github.zzwtsy.tools.Const.DB_FILE_PATH
-import com.github.zzwtsy.tools.Const.ROLE_NAME_ALIASES_FILE_URL
-import com.github.zzwtsy.tools.Const.ROLE_NAME_ALIASES_PATH
 import com.github.zzwtsy.tools.DBConnection.dataSource
-import com.github.zzwtsy.utils.HttpUtil
 import net.mamoe.mirai.utils.MiraiLogger
 import java.io.File
 
@@ -14,7 +11,7 @@ import java.io.File
  * @date 2023/03/25
  */
 object Database {
-    private val logger = MiraiLogger.Factory.create(this::class, "Genshin Mirai Bot-Database")
+    private val logger = MiraiLogger.Factory.create(this::class, "Genshin Mirai Bot - Database")
 
     /**
      * 初始化数据库
@@ -26,15 +23,6 @@ object Database {
         }
         //创建表
         crateTable()
-        //下载角色别名数据
-        val roleName = File(ROLE_NAME_ALIASES_PATH)
-        if (!roleName.exists()) {
-            val sendGet = HttpUtil.sendGet(ROLE_NAME_ALIASES_FILE_URL)
-            val byteArray = sendGet?.encodeToByteArray()
-            roleName.outputStream().use {
-                byteArray?.let { content -> it.write(content) }
-            }
-        }
     }
 
     /**
@@ -45,7 +33,7 @@ object Database {
         logger.info("创建 Characters 表")
         // 创建 Characters 表
         val connection = dataSource.connection
-        connection.prepareStatement(
+        val charactersStatus = connection.prepareStatement(
             """
             CREATE TABLE "Characters" (
               "id" UUID,
@@ -56,9 +44,14 @@ object Database {
         """.trimIndent()
         ).execute()
 
+        if (charactersStatus)
+            logger.info("成功创建 Characters 表")
+        else
+            logger.error("创建 Characters 表失败")
+
         logger.info("创建 Aliases 表")
         // 创建 Aliases 表
-        connection.prepareStatement(
+        val aliasesStatus = connection.prepareStatement(
             """
             CREATE TABLE "Aliases" (
               "character_id" UUID NOT NULL,
@@ -68,6 +61,10 @@ object Database {
             );
         """.trimIndent()
         ).execute()
+        if (aliasesStatus)
+            logger.info("成功创建 Aliases 表")
+        else
+            logger.error("创建 Aliases 表失败")
     }
 }
 

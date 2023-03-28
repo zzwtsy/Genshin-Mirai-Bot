@@ -2,15 +2,20 @@ package com.github.zzwtsy.service.miyoushe
 
 import com.github.zzwtsy.GenshinMiraiBot
 import com.github.zzwtsy.data.role.RoleName
-import com.github.zzwtsy.tools.*
 import com.github.zzwtsy.tools.Const.MYS_POSTS_URL
 import com.github.zzwtsy.tools.Const.ROLE_NAMES_URL
 import com.github.zzwtsy.tools.Const.STRATEGY_IMAGE_PATH
 import com.github.zzwtsy.tools.Const.STRATEGY_SOURCE
 import com.github.zzwtsy.tools.Const.oss
+import com.github.zzwtsy.tools.DownloadImage
+import com.github.zzwtsy.tools.MyHeaders
+import com.github.zzwtsy.tools.Tools
 import com.github.zzwtsy.utils.HttpUtil
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.*
+import com.github.zzwtsy.utils.JsonUtil
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import net.mamoe.mirai.utils.MiraiLogger
 import net.mamoe.mirai.utils.info
 import java.io.File
 
@@ -21,9 +26,10 @@ import java.io.File
  * @constructor 创建[StrategyService]
  */
 class StrategyService {
+    private val logger = MiraiLogger.Factory.create(this::class, "StrategyService")
+
     // 匹配旅行者元素类型的正则表达式
     private val travelerRegex = "[草雷水火岩风冰]主".toRegex()
-    private val format = Json { ignoreUnknownKeys = true }
 
     /**
      * 下载攻略图
@@ -39,7 +45,7 @@ class StrategyService {
         )
 
         // 记录符合条件的攻略图片链接数量
-        GenshinMiraiBot.logger.info { "攻略图个数：${strategyImageUrls.size}" }
+        logger.info { "攻略图个数：${strategyImageUrls.size}" }
 
         // 下载符合条件的攻略图片
         DownloadImage.downloadStrategyImage(strategyImageUrls, STRATEGY_IMAGE_PATH)
@@ -82,7 +88,7 @@ class StrategyService {
         val strategyImageUrls = getStrategyImageUrls(Tools.roleNameToRegex(updateNames))
 
         // 记录符合条件的攻略图片链接数量
-        GenshinMiraiBot.logger.info { "攻略图个数：${strategyImageUrls.size}" }
+        logger.info { "攻略图个数：${strategyImageUrls.size}" }
 
         // 下载需要更新的攻略图片
         DownloadImage.downloadStrategyImage(strategyImageUrls, STRATEGY_IMAGE_PATH)
@@ -103,7 +109,7 @@ class StrategyService {
 
         // 获取原神角色名称数据
         val res = HttpUtil.sendGet(ROLE_NAMES_URL, MyHeaders.baseHeader()) ?: return emptyList()
-        val genshinData = format.decodeFromString<RoleName.GenshinData>(res).data
+        val genshinData = JsonUtil.fromJson<RoleName.GenshinData>(res)?.data ?: return emptyList()
 
         // 筛选出所有角色名称
         val roles = genshinData.list
@@ -134,7 +140,7 @@ class StrategyService {
         // 获取攻略数据
         val strategyData = STRATEGY_SOURCE.mapNotNull { id ->
             val res = HttpUtil.sendGet("${MYS_POSTS_URL}${id}", MyHeaders.baseHeader()) ?: return@mapNotNull null
-            format.parseToJsonElement(res).jsonObject["data"]?.jsonObject?.get("posts")?.jsonArray
+            JsonUtil.fromJson(res)?.jsonObject?.get("data")?.jsonObject?.get("posts")?.jsonArray
         }.flatten()
 
         // 遍历攻略数据中的帖子，提取符合条件的角色名称和对应图片链接

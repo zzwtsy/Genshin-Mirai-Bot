@@ -3,8 +3,6 @@ package com.github.zzwtsy.tools
 import com.github.zzwtsy.tools.Const.SQL_CONNECT_URL
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import net.mamoe.mirai.utils.MiraiLogger
-import org.slf4j.LoggerFactory
 
 /**
  * 获取数据库连接池
@@ -23,6 +21,8 @@ object DBConnection {
         idleTimeout = 60000
         // 连接超时时间为 30 秒
         connectionTimeout = 30000
+        // 连接池名称
+        poolName = "Genshin Mirai Bot - HikariCP"
     }
 
     /**

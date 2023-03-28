@@ -1,12 +1,15 @@
 package com.github.zzwtsy.tools
 
-import com.github.zzwtsy.GenshinMiraiBot
 import com.github.zzwtsy.service.AliasService
 import com.github.zzwtsy.service.CharacterService
-import com.github.zzwtsy.tools.Const.TEMP_PATH
+import com.github.zzwtsy.service.CharacterService.getStrategyMd5ByAlias
+import com.github.zzwtsy.tools.Const.ROLE_NAME_ALIASES_FILE_URL
+import com.github.zzwtsy.utils.HttpUtil
+import com.github.zzwtsy.utils.JsonUtil
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import net.mamoe.mirai.utils.MiraiLogger
-import org.yaml.snakeyaml.Yaml
-import java.io.File
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.*
@@ -18,7 +21,7 @@ import java.util.*
  * @constructor 创建[Tools]
  */
 object Tools {
-    private val logger = MiraiLogger.Factory.create(this::class,"Tools")
+    private val logger = MiraiLogger.Factory.create(this::class, "Tools")
 
     /**
      * 将角色名转换为正则表达式
@@ -52,46 +55,87 @@ object Tools {
     }
 
     /**
-     * 将角色攻略图 md5 与角色别名保存到数据库表
-     * @param [aliasesAndMD5s] Map<角色名, 攻略图md5>
+     * 将角色攻略图 MD5 与角色别名保存到数据库表
+     * @param [aliasesAndMD5s] Map<角色名, 攻略图 MD5>
      */
     fun saveCharacterAliasesAndMD5s(aliasesAndMD5s: Map<String, String>) {
-        val travelerRegex = "[草雷水火岩风冰]主".toRegex()
+        // 匹配游戏中的旅行者主角的正则表达式
+        val travelerRegex = Regex("[草雷水火岩风冰]主")
+
+        // 获取角色别名数据
         val roleAliasesData = getRoleAliasesData()
-        if (roleAliasesData.isNullOrEmpty()) {
+
+        // 检查是否获取到了角色别名数据
+        if (roleAliasesData == null) {
             logger.error("获取角色别名数据失败")
             return
         }
+
+        // 将 JSON 字符串转换为 JsonObject 对象
+        val aliasesJson = JsonUtil.fromJson(roleAliasesData)?.jsonObject ?: return
+
+
+        // 遍历每个角色的别名和攻略图 MD5 值
         for ((roleName, imageMd5) in aliasesAndMD5s) {
+            // 如果该角色已有策略的 MD5 值，则跳过该角色
+            if (!getStrategyMd5ByAlias(roleName).isNullOrEmpty()) {
+                continue
+            }
+
+            // 输出正在准备添加的角色名称
             logger.debug("准备添加：$roleName")
-            CharacterService.getStrategyMd5ByAlias(roleName) ?: run {
-                roleAliasesData
-                    .filter { it.value.contains(roleName) }
-                    .forEach { (_, aliases) ->
-                        logger.debug("正在添加：$roleName")
-                        val uuid = getUUID()
-                        CharacterService.add(uuid, roleName, imageMd5)
-                        if (travelerRegex.containsMatchIn(roleName)) {
-                            val add = AliasService.add(uuid, roleName)
-                            if (add) logger.debug("${roleName}已添加别名${roleName}")
-                        } else {
-                            for (alias in aliases) {
-                                val add = AliasService.add(uuid, alias)
-                                if (add) logger.debug("${roleName}已添加别名${alias}")
-                            }
-                        }
-                    }
+
+            // 获取该角色的所有别名
+            val rolesJson = aliasesJson[roleName]?.jsonArray ?: continue
+
+            // 遍历该角色的每个别名，并保存其别名和攻略图 MD5 值
+            for (aliasJson in rolesJson) {
+                val aliasString = aliasJson.jsonPrimitive.content
+                val uuid = getUUID()
+                CharacterService.add(uuid, roleName, imageMd5)
+
+                // 如果该别名符合旅行者主角的正则表达式，则将其设置为该角色的别名
+                val addSuccess = AliasService.add(
+                    uuid,
+                    if (travelerRegex.containsMatchIn(aliasString)) roleName else aliasString
+                )
+
+                // 输出已添加的别名和攻略图 MD5 值
+                if (addSuccess) {
+                    logger.debug("$roleName 已添加别名 $aliasString")
+                }
             }
         }
+
+//        for ((roleName, imageMd5) in aliasesAndMD5s) {
+//            logger.debug("准备添加：$roleName")
+//            CharacterService.getStrategyMd5ByAlias(roleName) ?: run {
+//                roleAliasesData
+//                    .filter { it.value.contains(roleName) }
+//                    .forEach { (_, aliases) ->
+//                        logger.debug("正在添加：$roleName")
+//                        val uuid = getUUID()
+//                        CharacterService.add(uuid, roleName, imageMd5)
+//                        if (travelerRegex.containsMatchIn(roleName)) {
+//                            val add = AliasService.add(uuid, roleName)
+//                            if (add) logger.debug("${roleName}已添加别名${roleName}")
+//                        } else {
+//                            for (alias in aliases) {
+//                                val add = AliasService.add(uuid, alias)
+//                                if (add) logger.debug("${roleName}已添加别名${alias}")
+//                            }
+//                        }
+//                    }
+//            }
+//        }
     }
 
     /**
      * 获取角色别名数据
      * @return [Map<Int, List<String>>?]
      */
-    private fun getRoleAliasesData(): Map<Int, List<String>>? {
-        val reader = File("$TEMP_PATH/roleName.yml").reader()
-        return Yaml().load<Map<Int, List<String>>>(reader)
+    private fun getRoleAliasesData(): String? {
+        return HttpUtil.sendGet(ROLE_NAME_ALIASES_FILE_URL)
     }
 
     /**

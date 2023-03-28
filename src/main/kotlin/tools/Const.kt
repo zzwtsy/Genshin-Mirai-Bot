@@ -5,7 +5,7 @@ import com.github.zzwtsy.GenshinMiraiBot
 object Const {
     // api
     /** 角色别名数据文件 url */
-    const val ROLE_NAME_ALIASES_FILE_URL = "https://static.yumdeb.top/img/GenshinImpact/bot/roleNameAliases.yml"
+    const val ROLE_NAME_ALIASES_FILE_URL = "https://static.yumdeb.top/GenshinMiraiBot/json/roleNameAliases.json"
 
     /** 原神角色名称,网址 */
     const val ROLE_NAMES_URL =
@@ -38,12 +38,7 @@ object Const {
     /** 数据库连接 url */
     val SQL_CONNECT_URL = "jdbc:sqlite:$DB_FILE_PATH"
 
-    /** 临时文件夹路径 */
-    val TEMP_PATH = "$pluginDataPath/temp"
-
     /** 需要初始化的文件夹路径列表 */
-    val INIT_FILE_PATHS_LIST = arrayOf(TEMP_PATH, STRATEGY_IMAGE_PATH)
+    val INIT_FILE_PATHS_LIST = arrayOf(STRATEGY_IMAGE_PATH)
 
-    /** 角色别名数据文件存放路径 */
-    val ROLE_NAME_ALIASES_PATH = "$TEMP_PATH/roleName.yml"
 }

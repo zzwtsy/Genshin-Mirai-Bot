@@ -1,6 +1,5 @@
 package com.github.zzwtsy.tools
 
-import com.github.zzwtsy.GenshinMiraiBot
 import com.github.zzwtsy.tools.Tools.getMD5
 import com.github.zzwtsy.utils.HttpUtil
 import kotlinx.coroutines.*
@@ -62,9 +61,20 @@ object DownloadImage {
                 delay(200)
             }
         }.invokeOnCompletion {
-            if (it == null || it is CancellationException) {
-                // 将Map<角色名,角色攻略图片 md5> 与角色别名保存到数据库
-                Tools.saveCharacterAliasesAndMD5s(aliasesAndMD5s)
+            when (it) {
+                null -> {
+                    logger.info("原神攻略图下载完成")
+                    // 将Map<角色名,角色攻略图片 md5> 与角色别名保存到数据库
+                    Tools.saveCharacterAliasesAndMD5s(aliasesAndMD5s)
+                }
+
+                is CancellationException -> {
+                    logger.info("攻略图下载被取消")
+                }
+
+                else -> {
+                    logger.error("攻略图下载失败：$it")
+                }
             }
         }
     }
@@ -82,6 +92,6 @@ object DownloadImage {
         file.parentFile?.mkdirs()
         // 写入数据到文件中
         file.outputStream().use { it.write(this) }
-        GenshinMiraiBot.logger.info("${filename}.${extension}下载完成")
+        logger.info("${filename}.${extension}下载完成")
     }
 }
