@@ -2,7 +2,8 @@ package com.github.zzwtsy.tools
 
 import com.github.zzwtsy.GenshinMiraiBot
 
-object Const {// api
+object Const {
+    // api
     /** 角色别名数据文件 url */
     const val ROLE_NAME_ALIASES_FILE_URL = "https://static.yumdeb.top/img/GenshinImpact/bot/roleNameAliases.yml"
 

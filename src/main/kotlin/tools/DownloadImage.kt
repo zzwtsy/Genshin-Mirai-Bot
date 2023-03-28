@@ -4,6 +4,7 @@ import com.github.zzwtsy.GenshinMiraiBot
 import com.github.zzwtsy.tools.Tools.getMD5
 import com.github.zzwtsy.utils.HttpUtil
 import kotlinx.coroutines.*
+import net.mamoe.mirai.utils.MiraiLogger
 import okhttp3.Request
 import java.io.File
 
@@ -13,6 +14,8 @@ import java.io.File
  * @date 2023/03/25
  */
 object DownloadImage {
+    private val logger = MiraiLogger.Factory.create(this::class, "Genshin Mirai Bot-DownloadImage")
+
     /**
      * 下载多张攻略图片，并保存到指定路径。
      *
@@ -26,7 +29,6 @@ object DownloadImage {
         // Map<角色名,角色攻略图片 md5>
         val aliasesAndMD5s = mutableMapOf<String, String>()
         val client = HttpUtil.getOkhttpClient()
-        val logger = GenshinMiraiBot.logger
         CoroutineScope(Dispatchers.IO).launch {
             for ((filename, url) in imageUrls) {
                 // 构建请求

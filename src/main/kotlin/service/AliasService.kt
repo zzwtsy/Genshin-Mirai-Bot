@@ -2,7 +2,7 @@ package com.github.zzwtsy.service
 
 import com.github.zzwtsy.dao.Tables.aliases
 import com.github.zzwtsy.dao.Tables.insert
-import com.github.zzwtsy.tools.DataSource.dataSource
+import com.github.zzwtsy.tools.DBConnection.dataSource
 import org.ktorm.database.Database
 
 /**

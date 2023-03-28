@@ -4,6 +4,7 @@ import com.github.zzwtsy.GenshinMiraiBot
 import com.github.zzwtsy.service.AliasService
 import com.github.zzwtsy.service.CharacterService
 import com.github.zzwtsy.tools.Const.TEMP_PATH
+import net.mamoe.mirai.utils.MiraiLogger
 import org.yaml.snakeyaml.Yaml
 import java.io.File
 import java.security.MessageDigest
@@ -17,7 +18,7 @@ import java.util.*
  * @constructor 创建[Tools]
  */
 object Tools {
-    private val logger = GenshinMiraiBot.logger
+    private val logger = MiraiLogger.Factory.create(this::class,"Tools")
 
     /**
      * 将角色名转换为正则表达式
@@ -62,21 +63,21 @@ object Tools {
             return
         }
         for ((roleName, imageMd5) in aliasesAndMD5s) {
-            logger.error("准备添加：$roleName")
+            logger.debug("准备添加：$roleName")
             CharacterService.getStrategyMd5ByAlias(roleName) ?: run {
                 roleAliasesData
                     .filter { it.value.contains(roleName) }
                     .forEach { (_, aliases) ->
-                        logger.error("正在添加：$roleName")
+                        logger.debug("正在添加：$roleName")
                         val uuid = getUUID()
                         CharacterService.add(uuid, roleName, imageMd5)
                         if (travelerRegex.containsMatchIn(roleName)) {
                             val add = AliasService.add(uuid, roleName)
-                            if (add) logger.info("${roleName}已添加别名${roleName}")
+                            if (add) logger.debug("${roleName}已添加别名${roleName}")
                         } else {
                             for (alias in aliases) {
                                 val add = AliasService.add(uuid, alias)
-                                if (add) logger.info("${roleName}已添加别名${alias}")
+                                if (add) logger.debug("${roleName}已添加别名${alias}")
                             }
                         }
                     }

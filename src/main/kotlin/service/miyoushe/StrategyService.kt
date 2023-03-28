@@ -10,10 +10,7 @@ import com.github.zzwtsy.tools.Const.STRATEGY_SOURCE
 import com.github.zzwtsy.tools.Const.oss
 import com.github.zzwtsy.utils.HttpUtil
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.*
 import net.mamoe.mirai.utils.info
 import java.io.File
 
@@ -137,19 +134,21 @@ class StrategyService {
         // 获取攻略数据
         val strategyData = STRATEGY_SOURCE.mapNotNull { id ->
             val res = HttpUtil.sendGet("${MYS_POSTS_URL}${id}", MyHeaders.baseHeader()) ?: return@mapNotNull null
-            format.parseToJsonElement(res).jsonObject["data"]!!.jsonObject["posts"]!!.jsonArray
+            format.parseToJsonElement(res).jsonObject["data"]?.jsonObject?.get("posts")?.jsonArray
         }.flatten()
 
         // 遍历攻略数据中的帖子，提取符合条件的角色名称和对应图片链接
         return strategyData.mapNotNull { post ->
-            val imgUrl = post.jsonObject["image_list"]!!
-                .jsonArray
-                .maxByOrNull { it.jsonObject["size"]!!.jsonPrimitive.content.toInt() }
+            val imgUrl = post.jsonObject["image_list"]
+                ?.jsonArray
+                ?.maxByOrNull {
+                    it.jsonObject["size"]?.jsonPrimitive?.content?.toInt() ?: return@mapNotNull null
+                }
                 ?.jsonObject
                 ?.get("url")
                 ?.jsonPrimitive
                 ?.content ?: return@mapNotNull null
-            val imgName = post.jsonObject["post"]!!.jsonObject["subject"]!!.jsonPrimitive.content
+            val imgName = post.jsonObject["post"]?.jsonObject?.get("subject")?.jsonPrimitive?.content ?: ""
 
             // 判断角色名称是否符合正则表达式
             val regexMatch = when {
