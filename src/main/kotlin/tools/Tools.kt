@@ -60,8 +60,8 @@ object Tools {
      * @param [aliasesAndMD5s] Map<角色名, 攻略图 MD5>
      */
     fun saveCharacterAliasesAndMD5s(aliasesAndMD5s: Map<String, String>) {
-        // 匹配游戏中的旅行者主角的正则表达式
-        val travelerRegex = PluginRegexConfig.travelerElementTypeRegex
+        // 正则表达式：匹配旅行者
+        val travelerRegex = PluginRegexConfig.travelerElementTypeRegex.toRegex()
 
         // 获取角色别名数据
         val roleAliasesData = getRoleAliasesData()
@@ -75,10 +75,9 @@ object Tools {
         // 将 JSON 字符串转换为 JsonObject 对象
         val aliasesJson = JsonUtil.fromJson(roleAliasesData)?.jsonObject ?: return
 
-
         // 遍历每个角色的别名和攻略图 MD5 值
         for ((roleName, imageMd5) in aliasesAndMD5s) {
-            // 如果该角色已有策略的 MD5 值，则跳过该角色
+            // 如果该角色已有攻略的 MD5 值，则跳过该角色
             if (!getStrategyMd5ByAlias(roleName).isNullOrEmpty()) {
                 continue
             }
@@ -86,49 +85,57 @@ object Tools {
             // 输出正在准备添加的角色名称
             logger.debug("准备添加：$roleName")
 
+            // 生成 UUID
+            val uuid = getUUID()
+
+            // 添加角色
+            val addCharacterSuccess = CharacterService.add(uuid, roleName, imageMd5)
+            if (!addCharacterSuccess) {
+                logger.error("添加角色 $roleName 失败")
+                continue
+            }
+
+            // 如果是旅行者，则别名为自己（风主。。。）
+            if (travelerRegex.containsMatchIn(roleName)) {
+                val addAliasSuccess = AliasService.add(uuid, roleName)
+                if (!addAliasSuccess) {
+                    logger.error("添加角色别名 $roleName 失败")
+                } else {
+                    logger.debug("$roleName 已添加别名 $roleName")
+                }
+                continue
+            }
+
             // 获取该角色的所有别名
             val rolesJson = aliasesJson[roleName]?.jsonArray ?: continue
+
+            // 如果没有别名，直接添加角色名称作为别名
+            if (rolesJson.isEmpty()) {
+                val addAliasSuccess = AliasService.add(uuid, roleName)
+                if (!addAliasSuccess) {
+                    logger.error("添加角色别名 $roleName 失败")
+                } else {
+                    logger.debug("$roleName 已添加别名 $roleName")
+                }
+                continue
+            }
 
             // 遍历该角色的每个别名，并保存其别名和攻略图 MD5 值
             for (aliasJson in rolesJson) {
                 val aliasString = aliasJson.jsonPrimitive.content
-                val uuid = getUUID()
-                CharacterService.add(uuid, roleName, imageMd5)
 
-                // 如果该别名符合旅行者主角的正则表达式，则将其设置为该角色的别名
-                val addSuccess = AliasService.add(
-                    uuid,
-                    if (travelerRegex.containsMatchIn(aliasString)) roleName else aliasString
-                )
+                val addAliasSuccess = AliasService.add(uuid, aliasString)
 
                 // 输出已添加的别名和攻略图 MD5 值
-                if (addSuccess) {
+                if (addAliasSuccess) {
                     logger.debug("$roleName 已添加别名 $aliasString")
+                } else {
+                    logger.error("添加角色别名 $aliasString 失败")
                 }
             }
         }
-
-//        for ((roleName, imageMd5) in aliasesAndMD5s) {
-//            logger.debug("准备添加：$roleName")
-//            CharacterService.getStrategyMd5ByAlias(roleName) ?: run {
-//                roleAliasesData
-//                    .filter { it.value.contains(roleName) }
-//                    .forEach { (_, aliases) ->
-//                        logger.debug("正在添加：$roleName")
-//                        val uuid = getUUID()
-//                        CharacterService.add(uuid, roleName, imageMd5)
-//                        if (travelerRegex.containsMatchIn(roleName)) {
-//                            val add = AliasService.add(uuid, roleName)
-//                            if (add) logger.debug("${roleName}已添加别名${roleName}")
-//                        } else {
-//                            for (alias in aliases) {
-//                                val add = AliasService.add(uuid, alias)
-//                                if (add) logger.debug("${roleName}已添加别名${alias}")
-//                            }
-//                        }
-//                    }
-//            }
-//        }
+        // 输出完成信息
+        logger.info("角色别名数据添加完成")
     }
 
     /**

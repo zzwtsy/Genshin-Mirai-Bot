@@ -29,7 +29,7 @@ class StrategyService {
     private val logger = MiraiLogger.Factory.create(this::class, "StrategyService")
 
     // 匹配旅行者元素类型的正则表达式
-    private val travelerRegex = PluginRegexConfig.travelerElementTypeRegex
+    private val travelerRegex = PluginRegexConfig.travelerElementTypeRegex.toRegex()
 
     /**
      * 下载攻略图

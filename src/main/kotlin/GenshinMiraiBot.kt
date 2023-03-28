@@ -2,6 +2,7 @@ package com.github.zzwtsy
 
 import com.github.zzwtsy.command.Group
 import com.github.zzwtsy.data.pluginConfig.PluginConfig
+import com.github.zzwtsy.data.pluginConfig.PluginRegexConfig
 import com.github.zzwtsy.service.miyoushe.StrategyService
 import com.github.zzwtsy.tools.Const.INIT_FILE_PATHS_LIST
 import com.github.zzwtsy.tools.Const.STRATEGY_IMAGE_PATH
@@ -24,6 +25,7 @@ object GenshinMiraiBot : KotlinPlugin(
 ) {
     override fun onEnable() {
         reloadPluginConfig(PluginConfig)
+        reloadPluginConfig(PluginRegexConfig)
         //初始化文件夹
         INIT_FILE_PATHS_LIST.forEach {
             val file = File(it)

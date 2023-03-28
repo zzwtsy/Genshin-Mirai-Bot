@@ -38,11 +38,11 @@ object Database {
             CREATE TABLE "Characters" (
               "id" UUID,
               "name" TEXT NOT NULL,
-              "strategy_md5" VARCHAR(32) NOT NULL,
+              "strategy_md5" TEXT NOT NULL,
               PRIMARY KEY ("id")
             );
         """.trimIndent()
-        ).execute()
+        ).executeUpdate() == 0
 
         if (charactersStatus)
             logger.info("成功创建 Characters 表")
@@ -60,7 +60,7 @@ object Database {
               FOREIGN KEY ("character_id") REFERENCES "Characters" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION
             );
         """.trimIndent()
-        ).execute()
+        ).executeUpdate() == 0
         if (aliasesStatus)
             logger.info("成功创建 Aliases 表")
         else

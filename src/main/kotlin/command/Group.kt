@@ -24,13 +24,13 @@ object Group : CompositeCommand(
     @ConsoleExperimentalApi
     override val prefixOptional = true
     /** 旅行者别名正则表达式 */
-    private val travelersAlias = PluginRegexConfig.travelersAliasRegex
+    private val travelersAlias = PluginRegexConfig.travelersAliasRegex.toRegex()
 
     /** 角色名位于元素类型前 */
-    private val roleElementType = PluginRegexConfig.roleElementTypeRegex
+    private val roleElementType = PluginRegexConfig.roleElementTypeRegex.toRegex()
 
     /** 元素类型位于角色名前 */
-    private val elementTypeRole = PluginRegexConfig.elementTypeRoleRegex
+    private val elementTypeRole = PluginRegexConfig.elementTypeRoleRegex.toRegex()
 
     @SubCommand("攻略", "strategy", "gl")
     @Description("获取角色攻略图")
