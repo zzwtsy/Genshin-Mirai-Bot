@@ -1,6 +1,6 @@
 package com.github.zzwtsy.service.miyoushe
 
-import com.github.zzwtsy.GenshinMiraiBot
+import com.github.zzwtsy.data.pluginConfig.PluginRegexConfig
 import com.github.zzwtsy.data.role.RoleName
 import com.github.zzwtsy.tools.Const.MYS_POSTS_URL
 import com.github.zzwtsy.tools.Const.ROLE_NAMES_URL
@@ -29,7 +29,7 @@ class StrategyService {
     private val logger = MiraiLogger.Factory.create(this::class, "StrategyService")
 
     // 匹配旅行者元素类型的正则表达式
-    private val travelerRegex = "[草雷水火岩风冰]主".toRegex()
+    private val travelerRegex = PluginRegexConfig.travelerElementTypeRegex
 
     /**
      * 下载攻略图

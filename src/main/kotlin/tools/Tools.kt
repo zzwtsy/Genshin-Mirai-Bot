@@ -1,5 +1,6 @@
 package com.github.zzwtsy.tools
 
+import com.github.zzwtsy.data.pluginConfig.PluginRegexConfig
 import com.github.zzwtsy.service.AliasService
 import com.github.zzwtsy.service.CharacterService
 import com.github.zzwtsy.service.CharacterService.getStrategyMd5ByAlias
@@ -60,7 +61,7 @@ object Tools {
      */
     fun saveCharacterAliasesAndMD5s(aliasesAndMD5s: Map<String, String>) {
         // 匹配游戏中的旅行者主角的正则表达式
-        val travelerRegex = Regex("[草雷水火岩风冰]主")
+        val travelerRegex = PluginRegexConfig.travelerElementTypeRegex
 
         // 获取角色别名数据
         val roleAliasesData = getRoleAliasesData()
