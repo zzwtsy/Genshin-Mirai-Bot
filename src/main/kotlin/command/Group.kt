@@ -17,12 +17,13 @@ import java.io.File
 object Group : CompositeCommand(
     GenshinMiraiBot,
     primaryName = "gmb",
-    secondaryNames = PluginConfig.secondaryNames,
+    secondaryNames = PluginConfig.groupSecondaryNames,
     description = "群聊命令权限"
 ) {
     @ExperimentalCommandDescriptors
     @ConsoleExperimentalApi
     override val prefixOptional = true
+
     /** 旅行者别名正则表达式 */
     private val travelersAlias = PluginRegexConfig.travelersAliasRegex.toRegex()
 
@@ -41,21 +42,24 @@ object Group : CompositeCommand(
             return
         }
 
+        // 提示
+        quoteReply("正在获取攻略图")
+
         val imageMd5 = when {
             // 如果 roleName 包含在 travelers 中
-            // 检查是否包含草、雷、冰、水四种元素类型
-            // 如果没有则提示用户需要添加元素类型
             travelersAlias.containsMatchIn(roleName) -> {
+                // 检查是否包含元素类型
                 if (!roleElementType.containsMatchIn(roleName)
                     &&
                     !elementTypeRole.containsMatchIn(roleName)
                 ) {
+                    // 如果没有则提示用户需要添加元素类型
                     quoteReply("请添加元素类型")
                     return
                 }
                 // 如果包含了正确的元素类型，则解析角色名并获取攻略图片的 MD5 值
                 val parser = travelersParser(roleName)
-                CharacterService.getStrategyMd5ByAlias(parser)
+                parser?.let { CharacterService.getStrategyMd5ByAlias(it) }
             }
             // 如果 roleName 不在 travelers 中，则直接根据角色名获取攻略图片的 MD5 值
             else -> CharacterService.getStrategyMd5ByAlias(roleName)
@@ -86,7 +90,7 @@ object Group : CompositeCommand(
      * @param [message] 消息
      * @return [String]
      */
-    private fun travelersParser(message: String): String {
+    private fun travelersParser(message: String): String? {
         return when ("[草雷水火岩风冰]".toRegex().find(message)?.value) {
             "风" -> "风主"
             "岩" -> "岩主"
@@ -96,6 +100,6 @@ object Group : CompositeCommand(
             "火" -> "火主"
             "冰" -> "冰主"
             else -> null
-        }!!
+        }
     }
 }

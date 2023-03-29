@@ -1,5 +1,6 @@
 package com.github.zzwtsy
 
+import com.github.zzwtsy.command.Admin
 import com.github.zzwtsy.command.Group
 import com.github.zzwtsy.data.pluginConfig.PluginConfig
 import com.github.zzwtsy.data.pluginConfig.PluginRegexConfig
@@ -31,7 +32,7 @@ object GenshinMiraiBot : KotlinPlugin(
             val file = File(it)
             if (!file.exists()) {
                 file.mkdirs()
-                logger.debug("已创建{${it}}文件夹")
+                logger.info("已创建{${it}}文件夹")
             }
         }
         //初始化数据库
@@ -43,7 +44,11 @@ object GenshinMiraiBot : KotlinPlugin(
             if (status.isNotEmpty())
                 logger.info { "没有攻略图的角色${status}" }
         }
+
+        // 注册指令
         CommandManager.registerCommand(Group)
+        CommandManager.registerCommand(Admin)
+
         logger.info { "Plugin loaded" }
     }
 }

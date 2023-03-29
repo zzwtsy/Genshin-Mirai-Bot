@@ -9,7 +9,7 @@ import com.github.zzwtsy.tools.Const.STRATEGY_SOURCE
 import com.github.zzwtsy.tools.Const.oss
 import com.github.zzwtsy.tools.DownloadImage
 import com.github.zzwtsy.tools.MyHeaders
-import com.github.zzwtsy.tools.Tools
+import com.github.zzwtsy.tools.Tools.roleNameToRegex
 import com.github.zzwtsy.utils.HttpUtil
 import com.github.zzwtsy.utils.JsonUtil
 import kotlinx.serialization.json.jsonArray
@@ -41,7 +41,7 @@ class StrategyService {
 
         // 获取符合条件的攻略图片链接
         val strategyImageUrls = getStrategyImageUrls(
-            Tools.roleNameToRegex(roleNameList)
+            roleNameList.roleNameToRegex()
         )
 
         // 记录符合条件的攻略图片链接数量
@@ -60,7 +60,7 @@ class StrategyService {
 
     /**
      * 更新攻略图
-     * @return [List<String>] 没有攻略图的角色
+     * @return [List<String>] 已更新攻略图的角色
      */
     fun updateStrategyImage(): List<String> {
         // 获取原神所有角色名称
@@ -85,7 +85,7 @@ class StrategyService {
         if (updateNames.isEmpty()) return emptyList()
 
         // 获取需要更新的攻略图片链接
-        val strategyImageUrls = getStrategyImageUrls(Tools.roleNameToRegex(updateNames))
+        val strategyImageUrls = getStrategyImageUrls(updateNames.roleNameToRegex())
 
         // 记录符合条件的攻略图片链接数量
         logger.info { "攻略图个数：${strategyImageUrls.size}" }
@@ -93,9 +93,9 @@ class StrategyService {
         // 下载需要更新的攻略图片
         DownloadImage.downloadStrategyImage(strategyImageUrls, STRATEGY_IMAGE_PATH)
 
-        // 过已经获取攻略图的角色，只保留没有攻略图的角色名称列表
+        // 已经获取攻略图的角色，只保留没有攻略图的角色名称列表
         return strategyImageUrls.keys
-            .filter { !roleNameList.contains(it) }
+            .filter { roleNameList.contains(it) }
 
     }
 

@@ -14,7 +14,9 @@ object PluginConfig : AutoSavePluginConfig("PluginConfig") {
     @ValueDescription("qq 群号")
     val groupId by value(0L)
 
-    @ValueDescription("主指令别名")
-    val secondaryNames: Array<String> by value(arrayOf("原神", "genshin"))
+    @ValueDescription("群聊主指令别名")
+    val groupSecondaryNames: Array<String> by value(arrayOf("原神", "genshin"))
 
+    @ValueDescription("管理员主指令别名")
+    val adminSecondaryNames: Array<String> by value(arrayOf("管理员", "admin"))
 }

@@ -26,13 +26,12 @@ object Tools {
 
     /**
      * 将角色名转换为正则表达式
-     * @param [roleName] 角色名
      * @return [Regex]
      */
-    fun roleNameToRegex(roleName: List<String>): Regex {
+    fun List<String>.roleNameToRegex(): Regex {
         val rex = StringBuilder()
-        roleName.forEach {
-            if (it != roleName.last())
+        this.forEach {
+            if (it != this.last())
                 rex.append("($it)|")
             else
                 rex.append("($it)")

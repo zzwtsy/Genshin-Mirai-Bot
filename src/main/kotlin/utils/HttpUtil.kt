@@ -16,7 +16,7 @@ object HttpUtil {
     private val client = OkHttpClient.Builder().readTimeout(10, TimeUnit.SECONDS).build()
 
     /**
-     * 得获取 Okhttp Client
+     * 获取 Okhttp Client
      * @return [OkHttpClient]
      */
     fun getOkhttpClient(): OkHttpClient {
