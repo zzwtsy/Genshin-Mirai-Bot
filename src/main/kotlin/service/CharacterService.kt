@@ -8,6 +8,7 @@ import org.ktorm.database.Database
 import org.ktorm.dsl.eq
 import org.ktorm.entity.filter
 import org.ktorm.entity.map
+import org.ktorm.entity.toList
 
 /**
  * @author zzwtsy
@@ -27,6 +28,14 @@ object CharacterService {
             .filter { it.name eq alias }
             .map { it.strategyMd5 }
             .singleOrNull()
+    }
+
+    /**
+     * 获取角色名称列表
+     * @return [List]
+     */
+    fun getRoleNames(): List<String> {
+        return database.characters.map { it.name }
     }
 
     /**

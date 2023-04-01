@@ -21,7 +21,7 @@ object Admin : CompositeCommand(
     @SubCommand("update", "更新")
     @Description("更新攻略图")
     suspend fun CommandSender.updateStrategy() {
-
+        sendMessage("正在更新攻略图。。。")
         val updateStrategyImage = StrategyService().updateStrategyImage()
         sendMessage("${updateStrategyImage}已更新攻略图")
     }

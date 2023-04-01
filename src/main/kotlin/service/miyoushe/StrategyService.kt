@@ -2,6 +2,7 @@ package com.github.zzwtsy.service.miyoushe
 
 import com.github.zzwtsy.data.pluginConfig.PluginRegexConfig
 import com.github.zzwtsy.data.role.RoleName
+import com.github.zzwtsy.service.CharacterService
 import com.github.zzwtsy.tools.Const.MYS_POSTS_URL
 import com.github.zzwtsy.tools.Const.ROLE_NAMES_URL
 import com.github.zzwtsy.tools.Const.STRATEGY_IMAGE_PATH
@@ -63,18 +64,16 @@ class StrategyService {
      * @return [List<String>] 已更新攻略图的角色
      */
     fun updateStrategyImage(): List<String> {
+        //TODO: 有问题需要改进
+
         // 获取原神所有角色名称
         val roleNameList = getGenshinRoleName()
 
         // 获取已经下载的攻略图片名称列表
-        val fileNames = File(STRATEGY_IMAGE_PATH)
-            .listFiles()
-            ?.filter { it.isFile }
-            ?.filter { !travelerRegex.containsMatchIn(it.nameWithoutExtension) }
-            ?.mapNotNull { it.nameWithoutExtension }
+        val fileNames = CharacterService.getRoleNames()
 
         // 攻略图文件不存在或无攻略图片，返回所有角色名称
-        if (fileNames.isNullOrEmpty()) return roleNameList
+        if (fileNames.isEmpty()) return roleNameList
 
         // 筛选出需要更新的攻略图片名称列表
         val updateNames = roleNameList
