@@ -14,7 +14,7 @@ object DBConnection {
         // JDBC 驱动类名
         driverClassName = "org.sqlite.JDBC"
         // 最小空闲连接数为 1
-        minimumIdle = 5
+        minimumIdle = 1
         // 最大连接数为 50
         maximumPoolSize = 50
         // 连接可以空闲的最长时间为 60 秒

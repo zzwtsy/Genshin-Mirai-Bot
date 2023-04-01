@@ -33,42 +33,51 @@ object Group : CompositeCommand(
     /** 元素类型位于角色名前 */
     private val elementTypeRole = PluginRegexConfig.elementTypeRoleRegex.toRegex()
 
+    /** 空格正则 */
+    private val space = " ".toRegex()
+
     @SubCommand("攻略", "strategy", "gl")
     @Description("获取角色攻略图")
     suspend fun CommandSender.strategy(roleName: String = "") {
+
+        val noSpaceRoleName = space.replace(roleName, "")
+
         // 检查角色名是否为空
-        if (roleName.isEmpty()) {
+        if (noSpaceRoleName.isEmpty()) {
             quoteReply("请指定角色名")
             return
         }
 
         // 提示
-        quoteReply("正在获取攻略图")
+        quoteReply("正在获取『$noSpaceRoleName』攻略图")
 
         val imageMd5 = when {
             // 如果 roleName 包含在 travelers 中
-            travelersAlias.containsMatchIn(roleName) -> {
+            travelersAlias.containsMatchIn(noSpaceRoleName) -> {
                 // 检查是否包含元素类型
-                if (!roleElementType.containsMatchIn(roleName)
+                if (!roleElementType.containsMatchIn(noSpaceRoleName)
                     &&
-                    !elementTypeRole.containsMatchIn(roleName)
+                    !elementTypeRole.containsMatchIn(noSpaceRoleName)
                 ) {
                     // 如果没有则提示用户需要添加元素类型
                     quoteReply("请添加元素类型")
                     return
                 }
                 // 如果包含了正确的元素类型，则解析角色名并获取攻略图片的 MD5 值
-                val parser = travelersParser(roleName)
-                parser?.let { CharacterService.getStrategyMd5ByAlias(it) }
+                val parser = travelersParser(noSpaceRoleName) ?: kotlin.run {
+                    quoteReply("元素类型错误")
+                    return
+                }
+                CharacterService.getStrategyMd5ByAlias(parser)
             }
             // 如果 roleName 不在 travelers 中，则直接根据角色名获取攻略图片的 MD5 值
-            else -> CharacterService.getStrategyMd5ByAlias(roleName)
+            else -> CharacterService.getStrategyMd5ByAlias(noSpaceRoleName)
         }
 
         // 如果获取到的 MD5 值为 null，则表示没有找到对应的攻略图片
         // 否则发送攻略图片给用户
         if (imageMd5 == null) {
-            quoteReply("没有「${roleName}」的攻略")
+            quoteReply("没有「${noSpaceRoleName}」的攻略")
         } else {
             subject?.sendImage(File("$STRATEGY_IMAGE_PATH/$imageMd5.jpeg"))
         }
