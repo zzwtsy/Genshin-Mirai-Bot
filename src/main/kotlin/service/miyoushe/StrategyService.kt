@@ -18,7 +18,6 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import net.mamoe.mirai.utils.MiraiLogger
 import net.mamoe.mirai.utils.info
-import java.io.File
 
 /**
  * 获取米游社攻略相关资源
