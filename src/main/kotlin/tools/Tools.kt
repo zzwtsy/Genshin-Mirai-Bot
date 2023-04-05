@@ -11,6 +11,7 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import net.mamoe.mirai.utils.MiraiLogger
+import java.io.File
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.*
@@ -151,5 +152,16 @@ object Tools {
      */
     private fun getUUID(): String {
         return UUID.randomUUID().toString()
+    }
+
+    /**
+     * 获取文件名称列表(不包含文件后缀)
+     * @param [pathName] 路径
+     * @return [List<String>]
+     */
+    fun getFileNameList(pathName: String): List<String> {
+        return File(pathName).list()?.map {
+            it.split(".")[0]
+        }?.map { it } ?: emptyList()
     }
 }

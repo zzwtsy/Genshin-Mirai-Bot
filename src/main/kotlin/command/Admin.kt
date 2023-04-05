@@ -3,12 +3,13 @@ package com.github.zzwtsy.command
 import com.github.zzwtsy.GenshinMiraiBot
 import com.github.zzwtsy.data.pluginConfig.PluginConfig
 import com.github.zzwtsy.service.miyoushe.StrategyService
+import jdk.jfr.Description
 import net.mamoe.mirai.console.command.CommandSender
 import net.mamoe.mirai.console.command.CompositeCommand
 import net.mamoe.mirai.console.command.descriptor.ExperimentalCommandDescriptors
 import net.mamoe.mirai.console.util.ConsoleExperimentalApi
 
-object Admin : CompositeCommand(
+object Admin : BaseCommand, CompositeCommand(
     GenshinMiraiBot,
     primaryName = "gmbA",
     secondaryNames = PluginConfig.adminSecondaryNames,

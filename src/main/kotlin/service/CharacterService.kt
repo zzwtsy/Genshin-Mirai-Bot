@@ -8,7 +8,6 @@ import org.ktorm.database.Database
 import org.ktorm.dsl.eq
 import org.ktorm.entity.filter
 import org.ktorm.entity.map
-import org.ktorm.entity.toList
 
 /**
  * @author zzwtsy
@@ -36,6 +35,15 @@ object CharacterService {
      */
     fun getRoleNames(): List<String> {
         return database.characters.map { it.name }
+    }
+
+    /**
+     * 获取攻略图 MD5 列表
+     * @return [List<String>]
+     */
+    fun getStrategyImageMd5s(): List<String> {
+        return database.characters
+            .map { it.strategyMd5 }
     }
 
     /**

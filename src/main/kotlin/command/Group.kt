@@ -2,19 +2,16 @@ package com.github.zzwtsy.command
 
 import com.github.zzwtsy.GenshinMiraiBot
 import com.github.zzwtsy.data.pluginConfig.PluginConfig
-import com.github.zzwtsy.data.pluginConfig.PluginRegexConfig
 import com.github.zzwtsy.service.CharacterService
 import com.github.zzwtsy.tools.Const.STRATEGY_IMAGE_PATH
 import net.mamoe.mirai.console.command.CommandSender
-import net.mamoe.mirai.console.command.CommandSenderOnMessage
 import net.mamoe.mirai.console.command.CompositeCommand
 import net.mamoe.mirai.console.command.descriptor.ExperimentalCommandDescriptors
 import net.mamoe.mirai.console.util.ConsoleExperimentalApi
 import net.mamoe.mirai.contact.Contact.Companion.sendImage
-import net.mamoe.mirai.message.data.MessageSource.Key.quote
 import java.io.File
 
-object Group : CompositeCommand(
+object Group : BaseCommand, CompositeCommand(
     GenshinMiraiBot,
     primaryName = "gmb",
     secondaryNames = PluginConfig.groupSecondaryNames,
@@ -24,21 +21,10 @@ object Group : CompositeCommand(
     @ConsoleExperimentalApi
     override val prefixOptional = true
 
-    /** 旅行者别名正则表达式 */
-    private val travelersAlias = PluginRegexConfig.travelersAliasRegex.toRegex()
-
-    /** 角色名位于元素类型前 */
-    private val roleElementType = PluginRegexConfig.roleElementTypeRegex.toRegex()
-
-    /** 元素类型位于角色名前 */
-    private val elementTypeRole = PluginRegexConfig.elementTypeRoleRegex.toRegex()
-
-    /** 空格正则 */
-    private val space = " ".toRegex()
-
     @SubCommand("攻略", "strategy", "gl")
     @Description("获取角色攻略图")
     suspend fun CommandSender.strategy(roleName: String = "") {
+
 
         val noSpaceRoleName = space.replace(roleName, "")
 
@@ -81,17 +67,6 @@ object Group : CompositeCommand(
         } else {
             subject?.sendImage(File("$STRATEGY_IMAGE_PATH/$imageMd5.jpeg"))
         }
-    }
-
-    /**
-     * 引用回复
-     * @param [replyMessage] 回复的消息
-     */
-    private suspend fun CommandSender.quoteReply(replyMessage: String) {
-        if (subject != null) sendMessage(
-            (this as CommandSenderOnMessage<*>).fromEvent.source.quote().plus(replyMessage)
-        )
-        else sendMessage(replyMessage)
     }
 
     /**
