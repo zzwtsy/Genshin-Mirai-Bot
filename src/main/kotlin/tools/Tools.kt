@@ -3,7 +3,7 @@ package com.github.zzwtsy.tools
 import com.github.zzwtsy.data.pluginConfig.PluginRegexConfig
 import com.github.zzwtsy.service.AliasService
 import com.github.zzwtsy.service.CharacterService
-import com.github.zzwtsy.service.CharacterService.getStrategyMd5ByAlias
+import com.github.zzwtsy.service.AliasService.getStrategyMd5ByAlias
 import com.github.zzwtsy.tools.Const.ROLE_NAME_ALIASES_FILE_URL
 import com.github.zzwtsy.utils.HttpUtil
 import com.github.zzwtsy.utils.JsonUtil

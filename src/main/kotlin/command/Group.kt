@@ -2,7 +2,7 @@ package com.github.zzwtsy.command
 
 import com.github.zzwtsy.GenshinMiraiBot
 import com.github.zzwtsy.data.pluginConfig.PluginConfig
-import com.github.zzwtsy.service.CharacterService
+import com.github.zzwtsy.service.AliasService
 import com.github.zzwtsy.tools.Const.STRATEGY_IMAGE_PATH
 import net.mamoe.mirai.console.command.CommandSender
 import net.mamoe.mirai.console.command.CompositeCommand
@@ -50,14 +50,14 @@ object Group : BaseCommand, CompositeCommand(
                     return
                 }
                 // 如果包含了正确的元素类型，则解析角色名并获取攻略图片的 MD5 值
-                val parser = travelersParser(noSpaceRoleName) ?: kotlin.run {
+                val parser = travelersParser(noSpaceRoleName) ?: run {
                     quoteReply("元素类型错误")
                     return
                 }
-                CharacterService.getStrategyMd5ByAlias(parser)
+                AliasService.getStrategyMd5ByAlias(parser)
             }
             // 如果 roleName 不在 travelers 中，则直接根据角色名获取攻略图片的 MD5 值
-            else -> CharacterService.getStrategyMd5ByAlias(noSpaceRoleName)
+            else -> AliasService.getStrategyMd5ByAlias(noSpaceRoleName)
         }
 
         // 如果获取到的 MD5 值为 null，则表示没有找到对应的攻略图片

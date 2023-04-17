@@ -27,6 +27,7 @@ object GenshinMiraiBot : KotlinPlugin(
     override fun onEnable() {
         reloadPluginConfig(PluginConfig)
         reloadPluginConfig(PluginRegexConfig)
+
         //初始化文件夹
         INIT_FILE_PATHS_LIST.forEach {
             val file = File(it)
@@ -35,8 +36,10 @@ object GenshinMiraiBot : KotlinPlugin(
                 logger.info("已创建{${it}}文件夹")
             }
         }
+
         //初始化数据库
         Database.init()
+
         //下载攻略图
         val file = File(STRATEGY_IMAGE_PATH)
         if (!file.exists() || file.listFiles().isNullOrEmpty()) {

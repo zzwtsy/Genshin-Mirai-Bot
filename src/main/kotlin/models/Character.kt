@@ -8,6 +8,4 @@ interface Character : Entity<Character> {
     var id: String
     var name: String
     var strategyMd5: String
-
-    var idAlias: Alias?
 }
