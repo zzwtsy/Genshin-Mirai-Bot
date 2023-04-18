@@ -25,15 +25,6 @@ object CharacterService {
     }
 
     /**
-     * 获取攻略图 MD5 列表
-     * @return [List<String>]
-     */
-    fun getStrategyImageMd5s(): List<String> {
-        return database.characters
-            .map { it.strategyMd5 }
-    }
-
-    /**
      * 添加角色信息
      * @param [id] id
      * @param [name] 名字

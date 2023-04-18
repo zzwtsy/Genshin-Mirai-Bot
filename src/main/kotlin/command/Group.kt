@@ -21,9 +21,10 @@ object Group : BaseCommand, CompositeCommand(
     @ConsoleExperimentalApi
     override val prefixOptional = true
 
+    @OptIn(ConsoleExperimentalApi::class)
     @SubCommand("攻略", "strategy", "gl")
     @Description("获取角色攻略图")
-    suspend fun CommandSender.strategy(roleName: String = "") {
+    suspend fun CommandSender.strategy(@Name("角色名称") roleName: String = "") {
 
 
         val noSpaceRoleName = space.replace(roleName, "")
@@ -41,7 +42,8 @@ object Group : BaseCommand, CompositeCommand(
             // 如果 roleName 包含在 travelers 中
             travelersAlias.containsMatchIn(noSpaceRoleName) -> {
                 // 检查是否包含元素类型
-                if (!roleElementType.containsMatchIn(noSpaceRoleName)
+                if (
+                    !roleElementType.containsMatchIn(noSpaceRoleName)
                     &&
                     !elementTypeRole.containsMatchIn(noSpaceRoleName)
                 ) {

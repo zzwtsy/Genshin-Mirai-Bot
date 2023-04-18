@@ -23,7 +23,7 @@ import java.util.*
  * @constructor 创建[Tools]
  */
 object Tools {
-    private val logger = MiraiLogger.Factory.create(this::class, "Tools")
+    private val logger = MiraiLogger.Factory.create(this::class, "Genshin Mirai Bot-Tools")
 
     /**
      * 将角色名转换为正则表达式

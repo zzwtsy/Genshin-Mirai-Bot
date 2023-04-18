@@ -4,10 +4,10 @@ import com.github.zzwtsy.data.pluginConfig.PluginRegexConfig
 import com.github.zzwtsy.data.role.RoleName
 import com.github.zzwtsy.service.CharacterService
 import com.github.zzwtsy.tools.Const.MYS_POSTS_URL
+import com.github.zzwtsy.tools.Const.OSS
 import com.github.zzwtsy.tools.Const.ROLE_NAMES_URL
 import com.github.zzwtsy.tools.Const.STRATEGY_IMAGE_PATH
 import com.github.zzwtsy.tools.Const.STRATEGY_SOURCE
-import com.github.zzwtsy.tools.Const.oss
 import com.github.zzwtsy.tools.DownloadImage
 import com.github.zzwtsy.tools.MyHeaders
 import com.github.zzwtsy.tools.Tools.roleNameToRegex
@@ -27,7 +27,7 @@ import java.io.File
  * @constructor 创建[StrategyService]
  */
 class StrategyService {
-    private val logger = MiraiLogger.Factory.create(this::class, "StrategyService")
+    private val logger = MiraiLogger.Factory.create(this::class, "Genshin Mirai Bot-StrategyService")
 
     // 匹配旅行者元素类型的正则表达式
     private val travelerRegex = PluginRegexConfig.travelerElementTypeRegex.toRegex()
@@ -53,8 +53,8 @@ class StrategyService {
 
         // 过滤旅行者和已经获取的角色，只保留没有攻略图的角色名称列表
         return strategyImageUrls
-            .filter { !travelerRegex.containsMatchIn(it.key) }
-            .filter { !roleNameList.contains(it.key) }
+            .filterNot { travelerRegex.containsMatchIn(it.key) }
+            .filterNot { roleNameList.contains(it.key) }
             .map { it.key }
 
     }
@@ -64,7 +64,6 @@ class StrategyService {
      * @return [List<String>] 没有攻略图的角色
      */
     fun updateStrategyImage(): List<String> {
-        //TODO: 有问题需要改进
 
         // 获取原神所有角色名称
         val roleNameList = getGenshinRoleName()
@@ -166,7 +165,7 @@ class StrategyService {
             }
 
             // 如果角色名称符合正则表达式，则将名称和对应图片链接添加到 Map 中
-            regexMatch?.let { it to "$imgUrl$oss" }
+            regexMatch?.let { it to "$imgUrl$OSS" }
         }.toMap()
     }
 }

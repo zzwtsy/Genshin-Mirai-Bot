@@ -15,8 +15,8 @@ object Const {
     const val MYS_POSTS_URL =
         "https://bbs-api.mihoyo.com/post/wapi/getPostFullInCollection?&gids=2&order_type=2&collection_id="
 
-    /** 将攻略图片转换为 jpeg 格式减小图片大小 */
-    const val oss = "?x-oss-process=image/format,jpg"
+    /** 将攻略图片转换为 jpeg 格式并压缩图片 */
+    const val OSS = "?x-oss-process=image//resize,s_1200/quality,q_90/auto-orient,0/interlace,1/format,jpg"
 
     /** 西风驿站攻略帖合集 id */
     val STRATEGY_SOURCE = arrayOf(
