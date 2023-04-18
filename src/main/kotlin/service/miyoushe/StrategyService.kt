@@ -18,6 +18,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import net.mamoe.mirai.utils.MiraiLogger
 import net.mamoe.mirai.utils.info
+import java.io.File
 
 /**
  * 获取米游社攻略相关资源
@@ -60,7 +61,7 @@ class StrategyService {
 
     /**
      * 更新攻略图
-     * @return [List<String>] 已更新攻略图的角色
+     * @return [List<String>] 没有攻略图的角色
      */
     fun updateStrategyImage(): List<String> {
         //TODO: 有问题需要改进
@@ -71,13 +72,16 @@ class StrategyService {
         // 获取已经下载的攻略图片名称列表
         val fileNames = CharacterService.getRoleNames()
 
-        // 攻略图文件不存在或无攻略图片，返回所有角色名称
-        if (fileNames.isEmpty()) return roleNameList
+        // 数据库中不存在攻略图相关数据
+        if (fileNames.isEmpty()) {
+            File(STRATEGY_IMAGE_PATH).delete()
+            return downloadStrategyImage()
+        }
 
         // 筛选出需要更新的攻略图片名称列表
         val updateNames = roleNameList
             .filter { it != "旅行者" }
-            .filter { !fileNames.contains(it) } // 只保留未下载的角色
+            .filterNot { fileNames.contains(it) } // 只保留未下载的角色
 
         // 如果不需要更新，则返回空列表
         if (updateNames.isEmpty()) return emptyList()
@@ -86,14 +90,14 @@ class StrategyService {
         val strategyImageUrls = getStrategyImageUrls(updateNames.roleNameToRegex())
 
         // 记录符合条件的攻略图片链接数量
-        logger.info { "攻略图个数：${strategyImageUrls.size}" }
+        logger.info { "需要更新的攻略图个数：${strategyImageUrls.size}" }
 
         // 下载需要更新的攻略图片
         DownloadImage.downloadStrategyImage(strategyImageUrls, STRATEGY_IMAGE_PATH)
 
-        // 已经获取攻略图的角色，只保留没有攻略图的角色名称列表
+        // 存在攻略图的角色，只保留没有攻略图的角色名称列表
         return strategyImageUrls.keys
-            .filter { roleNameList.contains(it) }
+            .filterNot { roleNameList.contains(it) }
 
     }
 

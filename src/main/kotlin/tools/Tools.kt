@@ -5,6 +5,7 @@ import com.github.zzwtsy.service.AliasService
 import com.github.zzwtsy.service.CharacterService
 import com.github.zzwtsy.service.AliasService.getStrategyMd5ByAlias
 import com.github.zzwtsy.tools.Const.ROLE_NAME_ALIASES_FILE_URL
+import com.github.zzwtsy.tools.Const.STRATEGY_IMAGE_PATH
 import com.github.zzwtsy.utils.HttpUtil
 import com.github.zzwtsy.utils.JsonUtil
 import kotlinx.serialization.json.jsonArray
@@ -13,7 +14,6 @@ import kotlinx.serialization.json.jsonPrimitive
 import net.mamoe.mirai.utils.MiraiLogger
 import java.io.File
 import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
 import java.util.*
 
 /**
@@ -45,7 +45,6 @@ object Tools {
      *
      * @return 字节数组的 MD5 散列值，作为十六进制字符串。
      */
-    @Throws(NoSuchAlgorithmException::class)
     fun ByteArray.getMD5(): String {
         // 创建 MessageDigest 实例并计算散列值
         val md = MessageDigest.getInstance("MD5")
@@ -142,7 +141,7 @@ object Tools {
      * 获取角色别名数据
      * @return [Map<Int, List<String>>?]
      */
-    private fun getRoleAliasesData(): String? {
+    fun getRoleAliasesData(): String? {
         return HttpUtil.sendGet(ROLE_NAME_ALIASES_FILE_URL)
     }
 
@@ -150,18 +149,29 @@ object Tools {
      * 获取uuid
      * @return [String] uuid
      */
-    private fun getUUID(): String {
+    fun getUUID(): String {
         return UUID.randomUUID().toString()
     }
 
     /**
-     * 获取文件名称列表(不包含文件后缀)
-     * @param [pathName] 路径
-     * @return [List<String>]
+     * 获取本地攻略图文件夹中所有攻略图文件名（无后缀名）
+     * @return [List<String>?]
      */
-    fun getFileNameList(pathName: String): List<String> {
-        return File(pathName).list()?.map {
-            it.split(".")[0]
-        }?.map { it } ?: emptyList()
+    fun getStrategyFileNames(): List<String>? {
+        return File(STRATEGY_IMAGE_PATH)
+            .list()
+            ?.map { it.split(".")[0] }
+    }
+
+    /**
+     * 格式消息
+     * @return [String]
+     */
+    fun List<String>.formatMessage(): String {
+        val builder = StringBuilder()
+        this.forEach {
+            builder.append(it)
+        }
+        return builder.append("\n").toString()
     }
 }

@@ -3,7 +3,7 @@ package com.github.zzwtsy.command
 import com.github.zzwtsy.GenshinMiraiBot
 import com.github.zzwtsy.data.pluginConfig.PluginConfig
 import com.github.zzwtsy.service.miyoushe.StrategyService
-import jdk.jfr.Description
+import com.github.zzwtsy.tools.Tools.formatMessage
 import net.mamoe.mirai.console.command.CommandSender
 import net.mamoe.mirai.console.command.CompositeCommand
 import net.mamoe.mirai.console.command.descriptor.ExperimentalCommandDescriptors
@@ -24,6 +24,10 @@ object Admin : BaseCommand, CompositeCommand(
     suspend fun CommandSender.updateStrategy() {
         sendMessage("正在更新攻略图。。。")
         val updateStrategyImage = StrategyService().updateStrategyImage()
-        sendMessage("${updateStrategyImage}已更新攻略图")
+        if (updateStrategyImage.isEmpty()) {
+            sendMessage("已更新攻略图")
+        } else {
+            sendMessage("${updateStrategyImage.formatMessage()}没有攻略图")
+        }
     }
 }
