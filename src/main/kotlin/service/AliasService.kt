@@ -13,7 +13,7 @@ import org.ktorm.entity.find
  * @date 2023/03/27
  */
 object AliasService {
-    private val database = Database.connect(dataSource)
+    private val database = Database.connect(dataSource).aliases
 
     /**
      * 添加角色别名信息
@@ -22,7 +22,7 @@ object AliasService {
      * @return [Boolean]
      */
     fun add(characterId: String, alias: String): Boolean {
-        return database.aliases.insert {
+        return database.insert {
             set(it.name, alias)
             set(it.characterId, characterId)
         } > 0
@@ -34,7 +34,7 @@ object AliasService {
      * @return [String?]
      */
     fun getStrategyMd5ByAlias(alias: String): String? {
-        return database.aliases
+        return database
             .joinReferencesAndSelect()
             .find { it.name eq alias }
             ?.characterIdCharacter
